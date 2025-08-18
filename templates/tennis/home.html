@@ -1,0 +1,140 @@
+{% extends 'tennis/base.html' %}
+
+{% block title %}Главная - Бронирование теннисных кортов{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1>🎾 Бронирование теннисных кортов</h1>
+    <p style="color: #7f8c8d; margin-top: 1rem;">Выберите лучший теннисный центр для вашей игры</p>
+</div>
+
+{% if not user.is_authenticated %}
+    <div class="card" style="background: linear-gradient(135deg, #74b9ff, #0984e3); color: white; text-align: center;">
+        <h2 style="color: white; margin-bottom: 1rem;">Добро пожаловать!</h2>
+        <p style="margin-bottom: 2rem; font-size: 1.1rem;">
+            Для бронирования теннисных кортов необходимо войти в систему или зарегистрироваться.
+        </p>
+        <div class="btn-group" style="justify-content: center;">
+            <a href="{% url 'login' %}" class="btn" style="background: white; color: #0984e3;">Войти</a>
+            <a href="{% url 'register' %}" class="btn" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white;">Регистрация</a>
+        </div>
+    </div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Наши теннисные центры</h2>
+        <p style="color: #7f8c8d;">Выберите удобный для вас центр</p>
+    </div>
+
+    {% if tennis_centers %}
+        <div class="grid grid-2">
+            {% for center in tennis_centers %}
+                <div class="card" style="margin: 0; border: 2px solid #ecf0f1; transition: all 0.3s;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <h3 style="color: #2c3e50; margin: 0;">{{ center.name }}</h3>
+                        <span style="background: #3498db; color: white; padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 0.9rem;">
+                            {{ center.courts.count }} корт{{ center.courts.count|pluralize:"а,ов" }}
+                        </span>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="color: #7f8c8d; margin-bottom: 0.5rem;">
+                            <strong>📍 Адрес:</strong> {{ center.address }}
+                        </p>
+                        <p style="color: #7f8c8d; margin-bottom: 0.5rem;">
+                            <strong>📞 Телефон:</strong> {{ center.phone_number }}
+                        </p>
+                        <p style="color: #7f8c8d; margin-bottom: 0.5rem;">
+                            <strong>✉️ Email:</strong> {{ center.email }}
+                        </p>
+                        <p style="color: #7f8c8d; margin-bottom: 1rem;">
+                            <strong>🕒 Часы работы:</strong> {{ center.opening_time|time:"H:i" }} - {{ center.closing_time|time:"H:i" }}
+                        </p>
+                    </div>
+
+                    {% if center.courts.exists %}
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px; margin-bottom: 1rem;">
+                            <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">Корты:</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                {% for court in center.courts.all %}
+                                    <span style="background: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.9rem; border: 1px solid #ddd;">
+                                        Корт {{ court.court_number }} - {{ court.price_per_hour }}₸/час
+                                        {% if court.indoor %}🏠{% endif %}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'booking_step1' %}" method="post" style="margin-top: 1rem;">
+                            {% csrf_token %}
+                            <input type="hidden" name="tennis_center" value="{{ center.id }}">
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                Выбрать этот центр
+                            </button>
+                        </form>
+                    {% else %}
+                        <p style="text-align: center; color: #7f8c8d; margin-top: 1rem;">
+                            <a href="{% url 'login' %}" style="color: #3498db;">Войдите</a>, чтобы забронировать корт
+                        </p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 3rem; color: #7f8c8d;">
+            <h3>Теннисные центры пока не добавлены</h3>
+            <p>Администратор скоро добавит доступные центры для бронирования.</p>
+        </div>
+    {% endif %}
+</div>
+
+{% if user.is_authenticated %}
+    <div class="card" style="background: linear-gradient(135deg, #00b894, #00a085); color: white;">
+        <h2 style="color: white; margin-bottom: 1rem;">Быстрые действия</h2>
+        <div class="btn-group">
+            <a href="{% url 'booking_step1' %}" class="btn" style="background: white; color: #00a085;">
+                🎾 Новое бронирование
+            </a>
+            <a href="{% url 'profile' %}" class="btn" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white;">
+                👤 Мои бронирования
+            </a>
+        </div>
+    </div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Как забронировать корт?</h2>
+    </div>
+    <div class="grid grid-2">
+        <div>
+            <h3 style="color: #3498db; margin-bottom: 1rem;">📋 Простой процесс из 4 шагов:</h3>
+            <ol style="padding-left: 1.5rem; line-height: 1.8;">
+                <li><strong>Выберите теннисный центр</strong> - найдите удобное расположение</li>
+                <li><strong>Укажите дату и время</strong> - выберите подходящий слот</li>
+                <li><strong>Дополнительные услуги</strong> - тренер, аренда ракеток и мячей</li>
+                <li><strong>Подтверждение</strong> - заполните контактные данные и завершите бронирование</li>
+            </ol>
+        </div>
+        <div>
+            <h3 style="color: #e17055; margin-bottom: 1rem;">💡 Полезная информация:</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.8;">
+                <li>Бронирование возможно на 1, 2 или 3 часа</li>
+                <li>Оплата производится на месте</li>
+                <li>Отменить бронь можно до оплаты</li>
+                <li>Email-подтверждение приходит автоматически</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'tennis/base.html' %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1>Личный кабинет</h1>
+    <p style="color: #7f8c8d; margin-top: 1rem;">Добро пожаловать, {{ user.get_full_name|default:user.username }}!</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Быстрые действия</h2>
+    </div>
+    <div class="btn-group">
+        <a href="{% url 'booking_step1' %}" class="btn btn-primary">
+            🎾 Новое бронирование
+        </a>
+        <a href="{% url 'home' %}" class="btn btn-secondary">
+            🏠 На главную
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Мои бронирования</h2>
+        <p style="color: #7f8c8d;">История и текущие бронирования</p>
+    </div>
+
+    {% if bookings %}
+        <div class="grid grid-1">
+            {% for booking in bookings %}
+                <div class="card" style="margin: 0; border-left: 4px solid 
+                    {% if booking.status == 'pending' %}#f39c12
+                    {% elif booking.status == 'paid' %}#27ae60
+                    {% else %}#e74c3c{% endif %};">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <div>
+                            <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">
+                                {{ booking.tennis_center.name }}
+                            </h4>
+                            <p style="color: #7f8c8d; margin-bottom: 0.3rem;">
+                                <strong>Корт:</strong> {{ booking.court }}
+                            </p>
+                            <p style="color: #7f8c8d; margin-bottom: 0.3rem;">
+                                <strong>Дата:</strong> {{ booking.date|date:"d.m.Y" }} в {{ booking.start_time|time:"H:i" }}
+                            </p>
+                            <p style="color: #7f8c8d; margin-bottom: 0.3rem;">
+                                <strong>Продолжительность:</strong> {{ booking.duration_hours }} час{{ booking.duration_hours|pluralize:"а,ов" }}
+                            </p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="background: 
+                                {% if booking.status == 'pending' %}#f39c12
+                                {% elif booking.status == 'paid' %}#27ae60
+                                {% else %}#e74c3c{% endif %};
+                                color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.9rem;">
+                                {{ booking.get_status_display }}
+                            </span>
+                            <p style="font-size: 1.2rem; font-weight: bold; color: #2c3e50; margin-top: 0.5rem;">
+                                {{ booking.total_price }}₸
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if booking.trainer_service or booking.racket_rental or booking.balls_rental %}
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px; margin-bottom: 1rem;">
+                            <strong>Дополнительные услуги:</strong>
+                            {% if booking.trainer_service %}<span style="margin-left: 0.5rem; color: #27ae60;">Тренер</span>{% endif %}
+                            {% if booking.racket_rental %}<span style="margin-left: 0.5rem; color: #27ae60;">Ракетки ({{ booking.racket_rental }})</span>{% endif %}
+                            {% if booking.balls_rental %}<span style="margin-left: 0.5rem; color: #27ae60;">Мячи</span>{% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #ecf0f1;">
+                        <small style="color: #7f8c8d;">
+                            Создано: {{ booking.created_at|date:"d.m.Y H:i" }}
+                        </small>
+                        {% if booking.can_be_cancelled %}
+                            <a href="{% url 'cancel_booking' booking.id %}" 
+                               class="btn btn-danger" 
+                               style="padding: 0.3rem 0.8rem; font-size: 0.9rem;"
+                               onclick="return confirm('Вы уверены, что хотите отменить это бронирование?')">
+                                Отменить
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 3rem; color: #7f8c8d;">
+            <h3>У вас пока нет бронирований</h3>
+            <p style="margin: 1rem 0;">Начните с создания вашего первого бронирования!</p>
+            <a href="{% url 'booking_step1' %}" class="btn btn-primary">
+                🎾 Забронировать корт
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

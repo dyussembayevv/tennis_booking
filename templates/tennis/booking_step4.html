@@ -1,0 +1,108 @@
+{% extends 'tennis/base.html' %}
+
+{% block title %}Шаг 4 - Подтверждение{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1>Бронирование корта - Шаг 4</h1>
+</div>
+
+<div class="progress-bar">
+    <div class="progress-step completed">1. Выбор центра</div>
+    <div class="progress-step completed">2. Дата и время</div>
+    <div class="progress-step completed">3. Услуги</div>
+    <div class="progress-step active">4. Подтверждение</div>
+</div>
+
+<div class="grid grid-2">
+    <!-- Форма подтверждения -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Подтверждение заявки</h2>
+            <p style="color: #7f8c8d;">Заполните контактные данные</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">{{ form.full_name.label }}</label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}
+                    <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem;">
+                        {{ form.full_name.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ form.phone.label }}</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem;">
+                        {{ form.phone.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem;">
+                        {{ form.email.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="btn-group">
+                <a href="{% url 'booking_step3' %}" class="btn btn-secondary">← Назад</a>
+                <button type="submit" class="btn btn-success" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                    ✓ Подтвердить бронирование
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Сводка бронирования -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Детали бронирования</h2>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 5px; margin-bottom: 1.5rem;">
+            <h4 style="color: #2c3e50; margin-bottom: 1rem;">🏢 {{ tennis_center.name }}</h4>
+            <p style="color: #7f8c8d; margin-bottom: 0.5rem;">{{ tennis_center.address }}</p>
+            <p style="color: #7f8c8d;">{{ tennis_center.phone_number }}</p>
+        </div>
+
+        <div style="background: #e8f5e8; padding: 1.5rem; border-radius: 5px; margin-bottom: 1.5rem;">
+            <h4 style="color: #27ae60; margin-bottom: 1rem;">🎾 {{ court }}</h4>
+            <p style="margin-bottom: 0.5rem;"><strong>📅 Дата:</strong> {{ session.date|date:"d.m.Y" }}</p>
+            <p style="margin-bottom: 0.5rem;"><strong>⏰ Время:</strong> {{ session.start_time|time:"H:i" }}</p>
+            <p style="margin-bottom: 0.5rem;"><strong>⏱️ Продолжительность:</strong> {{ session.duration_hours }} час{{ session.duration_hours|pluralize:"а,ов" }}</p>
+        </div>
+
+        {% if session.trainer_service or session.racket_rental or session.balls_rental %}
+            <div style="background: #fff3cd; padding: 1.5rem; border-radius: 5px; margin-bottom: 1.5rem;">
+                <h4 style="color: #856404; margin-bottom: 1rem;">➕ Дополнительные услуги:</h4>
+                {% if session.trainer_service %}
+                    <p style="margin-bottom: 0.3rem;">✓ Услуги тренера (+10000₸)</p>
+                {% endif %}
+                {% if session.racket_rental %}
+                    <p style="margin-bottom: 0.3rem;">✓ Аренда ракеток: {{ session.racket_rental }} шт. (+{{ session.racket_rental }}₸)</p>
+                {% endif %}
+                {% if session.balls_rental %}
+                    <p style="margin-bottom: 0.3rem;">✓ Аренда мячей (+1000₸)</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div style="background: linear-gradient(135deg, #00b894, #00a085); color: white; padding: 1.5rem; border-radius: 5px; text-align: center;">
+            <h3 style="color: white; margin-bottom: 0.5rem;">Общая стоимость:</h3>
+            <div style="font-size: 2rem; font-weight: bold;">{{ total_price }}₸</div>
+            <p style="margin-top: 0.5rem; opacity: 0.9;">Оплата производится на месте</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

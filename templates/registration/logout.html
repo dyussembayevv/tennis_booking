@@ -1,0 +1,23 @@
+{% extends 'tennis/base.html' %}
+
+{% block title %}Выход из системы{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1>Выход из системы</h1>
+</div>
+
+<div style="max-width: 500px; margin: 0 auto;">
+    <div class="card" style="text-align: center;">
+        <h2 style="color: #27ae60; margin-bottom: 1rem;">✓ Вы успешно вышли из системы</h2>
+        <p style="color: #7f8c8d; margin-bottom: 2rem;">
+            Спасибо за использование нашего сервиса бронирования теннисных кортов!
+        </p>
+        
+        <div class="btn-group" style="justify-content: center;">
+            <a href="{% url 'home' %}" class="btn btn-primary">На главную</a>
+            <a href="{% url 'login' %}" class="btn btn-secondary">Войти снова</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

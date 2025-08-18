@@ -1,0 +1,80 @@
+{% extends 'tennis/base.html' %}
+
+{% block title %}Шаг 3 - Дополнительные услуги{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1>Бронирование корта - Шаг 3</h1>
+</div>
+
+<div class="progress-bar">
+    <div class="progress-step completed">1. Выбор центра</div>
+    <div class="progress-step completed">2. Дата и время</div>
+    <div class="progress-step active">3. Услуги</div>
+    <div class="progress-step">4. Подтверждение</div>
+</div>
+
+<form method="post" class="card">
+    {% csrf_token %}
+    <div class="card-header">
+        <h2 class="card-title">Дополнительные услуги</h2>
+        <p style="color: #7f8c8d;">Выберите нужные дополнительные услуги</p>
+    </div>
+
+    <div class="grid grid-1">
+        <div style="background: #f8f9fa; padding: 2rem; border-radius: 10px; margin-bottom: 2rem;">
+            <div class="form-group">
+                <div class="form-check">
+                    {{ form.trainer_service }}
+                    <label for="{{ form.trainer_service.id_for_label }}" class="form-label" style="margin: 0; cursor: pointer;">
+                        <span style="font-size: 1.1rem;">{{ form.trainer_service.label }}</span>
+                        <br>
+                        <small style="color: #7f8c8d;">Профессиональный тренер поможет улучшить вашу игру</small>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ form.racket_rental.label }}</label>
+                {{ form.racket_rental }}
+                <small style="color: #7f8c8d;">Качественные ракетки для комфортной игры</small>
+                {% if form.racket_rental.errors %}
+                    <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem;">
+                        {{ form.racket_rental.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <div class="form-check">
+                    {{ form.balls_rental }}
+                    <label for="{{ form.balls_rental.id_for_label }}" class="form-label" style="margin: 0; cursor: pointer;">
+                        <span style="font-size: 1.1rem;">{{ form.balls_rental.label }}</span>
+                        <br>
+                        <small style="color: #7f8c8d;">Новые теннисные мячи для игры</small>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #74b9ff, #0984e3); color: white; padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem;">
+        <h3 style="color: white; margin-bottom: 1rem;">💰 Стоимость услуг:</h3>
+        <div class="grid grid-2">
+            <div>
+                <p style="margin-bottom: 0.5rem;">🎾 Услуги тренера: <strong>10000₸</strong></p>
+                <p style="margin-bottom: 0.5rem;">🏓 Аренда ракетки: <strong>2000₸ за штуку</strong></p>
+            </div>
+            <div>
+                <p style="margin-bottom: 0.5rem;">🎾 Аренда мячей: <strong>1000₸</strong></p>
+                <p style="margin-bottom: 0.5rem;">⏱️ Цена корта: <strong>зависит от выбора</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <a href="{% url 'booking_step2' %}" class="btn btn-secondary">← Назад</a>
+        <button type="submit" class="btn btn-primary">Далее →</button>
+    </div>
+</form>
+{% endblock %}

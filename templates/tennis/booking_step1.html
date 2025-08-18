@@ -1,0 +1,79 @@
+<!-- templates/tennis/booking_step1.html -->
+{% extends 'tennis/base.html' %}
+
+{% block title %}Шаг 1 - Выбор центра{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1>Бронирование корта - Шаг 1</h1>
+</div>
+
+<div class="progress-bar">
+    <div class="progress-step active">1. Выбор центра</div>
+    <div class="progress-step">2. Дата и время</div>
+    <div class="progress-step">3. Услуги</div>
+    <div class="progress-step">4. Подтверждение</div>
+</div>
+
+<form method="post" class="card">
+    {% csrf_token %}
+    <div class="card-header">
+        <h2 class="card-title">Выберите теннисный центр</h2>
+        <p style="color: #7f8c8d;">Выберите удобный для вас центр</p>
+    </div>
+
+    {% if tennis_centers %}
+        <div class="grid grid-2">
+            {% for center in tennis_centers %}
+                <div class="center-option" onclick="selectCenter({{ center.id }})" style="cursor: pointer; border: 2px solid #ecf0f1; border-radius: 10px; padding: 1.5rem; transition: all 0.3s;">
+                    <input type="radio" name="tennis_center" value="{{ center.id }}" id="center_{{ center.id }}" style="display: none;">
+                    <h3 style="color: #2c3e50; margin-bottom: 1rem;">{{ center.name }}</h3>
+                    <p style="margin-bottom: 0.5rem; color: #7f8c8d;"><strong>📍</strong> {{ center.address }}</p>
+                    <p style="margin-bottom: 0.5rem; color: #7f8c8d;"><strong>📞</strong> {{ center.phone_number }}</p>
+                    <p style="margin-bottom: 0.5rem; color: #7f8c8d;"><strong>🕒</strong> {{ center.opening_time|time:"H:i" }} - {{ center.closing_time|time:"H:i" }}</p>
+                    <p style="margin-bottom: 1rem; color: #7f8c8d;"><strong>🎾</strong> {{ center.courts.count }} корт{{ center.courts.count|pluralize:"а,ов" }}</p>
+
+                    {% if center.courts.exists %}
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px;">
+                            <strong>Корты и цены:</strong>
+                            {% for court in center.courts.all %}
+                                <div style="margin-top: 0.5rem;">
+                                    Корт {{ court.court_number }} - {{ court.price_per_hour }}₸/час ({{ court.get_surface_type_display }})
+                                    {% if court.indoor %}<span style="color: #27ae60;">🏠 Крытый</span>{% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="btn-group">
+            <a href="{% url 'home' %}" class="btn btn-secondary">← Назад</a>
+            <button type="submit" class="btn btn-primary">Далее →</button>
+        </div>
+    {% else %}
+        <p style="text-align: center; color: #7f8c8d; padding: 2rem;">
+            Теннисные центры пока не добавлены. Обратитесь к администратору.
+        </p>
+    {% endif %}
+</form>
+
+<script>
+function selectCenter(centerId) {
+    // Убираем выделение со всех центров
+    document.querySelectorAll('.center-option').forEach(option => {
+        option.style.borderColor = '#ecf0f1';
+        option.style.backgroundColor = 'white';
+    });
+
+    // Выделяем выбранный центр
+    const selectedOption = document.querySelector(`input[value="${centerId}"]`).closest('.center-option');
+    selectedOption.style.borderColor = '#3498db';
+    selectedOption.style.backgroundColor = '#f8f9ff';
+
+    // Отмечаем радио-кнопку
+    document.getElementById(`center_${centerId}`).checked = true;
+}
+</script>
+{% endblock %}

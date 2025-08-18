@@ -1,0 +1,70 @@
+{% extends 'tennis/base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1>Регистрация</h1>
+</div>
+
+<div style="max-width: 400px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title" style="text-align: center;">🎾 Создать аккаунт</h2>
+            <p style="text-align: center; color: #7f8c8d;">Зарегистрируйтесь для бронирования</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">{{ form.username.label }}</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem;">
+                        {{ form.username.errors.0 }}
+                    </div>
+                {% endif %}
+                {% if form.username.help_text %}
+                    <small style="color: #7f8c8d;">{{ form.username.help_text }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ form.password1.label }}</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem;">
+                        {% for error in form.password1.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if form.password1.help_text %}
+                    <small style="color: #7f8c8d;">{{ form.password1.help_text }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ form.password2.label }}</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem;">
+                        {{ form.password2.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+                Зарегистрироваться
+            </button>
+        </form>
+
+        <div style="text-align: center; padding-top: 1rem; border-top: 1px solid #ecf0f1;">
+            <p style="color: #7f8c8d;">
+                Уже есть аккаунт? <a href="{% url 'login' %}" style="color: #3498db;">Войти</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'tennis/base.html' %}
+
+{% block title %}Бронирование успешно создано{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto; text-align: center;">
+    <div class="card" style="background: linear-gradient(135deg, #00b894, #00a085); color: white;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+        <h1 style="color: white; margin-bottom: 1rem;">Бронирование успешно создано!</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">
+            Ваша заявка принята и отправлена на обработку
+        </p>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Детали вашего бронирования</h2>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 5px; margin-bottom: 1.5rem;">
+            <h4 style="color: #2c3e50; margin-bottom: 1rem;">🏢 {{ booking.tennis_center.name }}</h4>
+            <p style="color: #7f8c8d; margin-bottom: 0.5rem;">{{ booking.tennis_center.address }}</p>
+            <p style="color: #7f8c8d;">{{ booking.tennis_center.phone_number }}</p>
+        </div>
+
+        <div class="grid grid-2">
+            <div>
+                <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">🎾 Корт и время</h4>
+                <p><strong>Корт:</strong> {{ booking.court }}</p>
+                <p><strong>Дата:</strong> {{ booking.date|date:"d.m.Y" }}</p>
+                <p><strong>Время:</strong> {{ booking.start_time|time:"H:i" }}</p>
+                <p><strong>Длительность:</strong> {{ booking.duration_hours }} час{{ booking.duration_hours|pluralize:"а,ов" }}</p>
+            </div>
+            <div>
+                <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">💰 Стоимость</h4>
+                <p style="font-size: 1.5rem; font-weight: bold; color: #27ae60;">{{ booking.total_price }}₸</p>
+                <p style="color: #7f8c8d;">Оплата на месте</p>
+                <p style="color: #f39c12; font-weight: bold;">Статус: {{ booking.get_status_display }}</p>
+            </div>
+        </div>
+
+        {% if booking.trainer_service or booking.racket_rental or booking.balls_rental %}
+            <div style="background: #fff3cd; padding: 1rem; border-radius: 5px; margin: 1rem 0;">
+                <h4 style="color: #856404; margin-bottom: 0.5rem;">Дополнительные услуги:</h4>
+                {% if booking.trainer_service %}<p>✓ Услуги тренера</p>{% endif %}
+                {% if booking.racket_rental %}<p>✓ Аренда ракеток: {{ booking.racket_rental }} шт.</p>{% endif %}
+                {% if booking.balls_rental %}<p>✓ Аренда мячей</p>{% endif %}
+            </div>
+        {% endif %}
+
+        <div style="background: #d4edda; padding: 1rem; border-radius: 5px; margin: 1rem 0;">
+            <h4 style="color: #155724; margin-bottom: 0.5rem;">📧 Подтверждение отправлено</h4>
+            <p style="color: #155724;">
+                Подтверждение бронирования отправлено на {{ booking.email }}
+            </p>
+        </div>
+    </div>
+
+    <div class="btn-group" style="justify-content: center;">
+        <a href="{% url 'profile' %}" class="btn btn-primary">Мои бронирования</a>
+        <a href="{% url 'booking_step1' %}" class="btn btn-secondary">Новое бронирование</a>
+        <a href="{% url 'home' %}" class="btn btn-secondary">На главную</a>
+    </div>
+</div>
+{% endblock %}

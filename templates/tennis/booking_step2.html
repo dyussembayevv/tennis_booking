@@ -1,0 +1,99 @@
+{% extends 'tennis/base.html' %}
+
+{% block title %}Шаг 2 - Дата и время{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1>Бронирование корта - Шаг 2</h1>
+</div>
+
+<div class="progress-bar">
+    <div class="progress-step completed">1. Выбор центра</div>
+    <div class="progress-step active">2. Дата и время</div>
+    <div class="progress-step">3. Услуги</div>
+    <div class="progress-step">4. Подтверждение</div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{{ tennis_center.name }}</h2>
+        <p style="color: #7f8c8d;">{{ tennis_center.address }}</p>
+        <p style="color: #7f8c8d;">Часы работы: {{ tennis_center.opening_time|time:"H:i" }} - {{ tennis_center.closing_time|time:"H:i" }}</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="grid grid-2">
+            <div class="form-group">
+                <label class="form-label">{{ form.date.label }}</label>
+                {{ form.date }}
+                {% if form.date.errors %}
+                    <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem;">
+                        {{ form.date.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">{{ form.start_time.label }}</label>
+                {{ form.start_time }}
+                {% if form.start_time.errors %}
+                    <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem;">
+                        {{ form.start_time.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid grid-2">
+            <div class="form-group">
+                <label class="form-label">{{ form.duration_hours.label }}</label>
+                {{ form.duration_hours }}
+                {% if form.duration_hours.errors %}
+                    <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem;">
+                        {{ form.duration_hours.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">{{ form.court.label }}</label>
+                {{ form.court }}
+                {% if form.court.errors %}
+                    <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem;">
+                        {{ form.court.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if form.non_field_errors %}
+            <div style="color: #e74c3c; background: #ffeaea; padding: 1rem; border-radius: 5px; margin: 1rem 0;">
+                {{ form.non_field_errors.0 }}
+            </div>
+        {% endif %}
+
+        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 5px; margin: 1.5rem 0;">
+            <h4 style="color: #2c3e50; margin-bottom: 1rem;">Доступные корты:</h4>
+            <div class="grid grid-3">
+                {% for court in courts %}
+                    <div style="background: white; padding: 1rem; border-radius: 5px; border: 1px solid #ddd;">
+                        <h5 style="margin-bottom: 0.5rem;">Корт {{ court.court_number }}</h5>
+                        <p style="color: #7f8c8d; margin-bottom: 0.5rem;">{{ court.get_surface_type_display }}</p>
+                        <p style="color: #27ae60; font-weight: bold;">{{ court.price_per_hour }}₸/час</p>
+                        {% if court.indoor %}
+                            <span style="background: #27ae60; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.8rem;">🏠 Крытый</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <a href="{% url 'booking_step1' %}" class="btn btn-secondary">← Назад</a>
+            <button type="submit" class="btn btn-primary">Далее →</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
